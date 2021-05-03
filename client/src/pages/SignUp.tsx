@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -48,6 +48,20 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignUp() {
   const classes = useStyles();
+  // Form properties
+  const NAME = "name";
+  const EMAIL = "email";
+  const PASSWORD = "password";
+  const CONFIRMED_PASSWORD = "confirmedPassword";
+  const IS_REMEMBER_ME_TICKED = "isRememberMeTicked";
+
+  const [formState, setFormState] = useState({
+    [NAME]: "",
+    [EMAIL]: "",
+    [PASSWORD]: "",
+    [CONFIRMED_PASSWORD]: "",
+    [IS_REMEMBER_ME_TICKED]: false,
+  });
 
   const submitForm = (event: React.SyntheticEvent): void => {
     event.preventDefault();
@@ -66,27 +80,23 @@ export default function SignUp() {
         </Typography>
         <form className={classes.form} noValidate onSubmit={submitForm}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
-                autoComplete="fname"
-                name="firstName"
+                autoComplete="name"
+                name="name"
                 variant="outlined"
                 required
                 fullWidth
-                id="firstName"
-                label="First Name"
+                id="name"
+                label="Name"
                 autoFocus
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="lname"
+                onChange={(e) =>
+                  setFormState((state) => ({
+                    ...state,
+                    [NAME]: e.target.value,
+                  }))
+                }
+                value={formState[NAME]}
               />
             </Grid>
             <Grid item xs={12}>
@@ -98,6 +108,13 @@ export default function SignUp() {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                onChange={(e) =>
+                  setFormState((state) => ({
+                    ...state,
+                    [EMAIL]: e.target.value,
+                  }))
+                }
+                value={formState[EMAIL]}
               />
             </Grid>
             <Grid item xs={12}>
@@ -110,6 +127,13 @@ export default function SignUp() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                onChange={(e) =>
+                  setFormState((state) => ({
+                    ...state,
+                    [PASSWORD]: e.target.value,
+                  }))
+                }
+                value={formState[PASSWORD]}
               />
             </Grid>
             <Grid item xs={12}>
@@ -122,11 +146,32 @@ export default function SignUp() {
                 type="confirm-password"
                 id="confirm-password"
                 autoComplete="current-password"
+                onChange={(e) =>
+                  setFormState((state) => ({
+                    ...state,
+                    [CONFIRMED_PASSWORD]: e.target.value,
+                  }))
+                }
+                value={formState[CONFIRMED_PASSWORD]}
               />
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
+                control={
+                  <Checkbox
+                    value="allowExtraEmails"
+                    color="primary"
+                    checked={formState[IS_REMEMBER_ME_TICKED]}
+                    onChange={() =>
+                      setFormState((state) => ({
+                        ...state,
+                        [IS_REMEMBER_ME_TICKED]: !formState[
+                          IS_REMEMBER_ME_TICKED
+                        ],
+                      }))
+                    }
+                  />
+                }
                 label="I want to receive inspiration, marketing promotions and updates via email."
               />
             </Grid>
