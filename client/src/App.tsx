@@ -8,6 +8,8 @@ import PrivateRoute from "./components/redirect/PrivateRoute";
 import PublicRoute from "./components/redirect/PublicRoute";
 
 function App() {
+  // Placeholder for isAuthenticated state until proper auth solution is implemented.
+  const isAuthenticated = false;
   return (
     <div className={styles.App}>
       <Router>
@@ -15,22 +17,22 @@ function App() {
           <PrivateRoute
             exact
             path="/"
-            isAuthenticated={false}
+            isAuthenticated={isAuthenticated}
             component={Main}
           />
           <PublicRoute
             path="/signup"
-            isAuthenticated={false}
+            isAuthenticated={isAuthenticated}
             component={SignUp}
           />
           <PublicRoute
             path="/login"
-            isAuthenticated={false}
+            isAuthenticated={isAuthenticated}
             component={LogIn}
           />
           <PublicRoute
             path="/welcome"
-            isAuthenticated={false}
+            isAuthenticated={isAuthenticated}
             component={Landing}
           />
         </Switch>

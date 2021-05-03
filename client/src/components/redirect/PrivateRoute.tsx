@@ -1,12 +1,25 @@
-import React from "react";
-import { Route, Redirect } from "react-router-dom";
+import {
+  Route,
+  Redirect,
+  RouteProps,
+  RouteComponentProps,
+} from "react-router-dom";
 
-const PrivateRoute = ({ component: Component, isAuthenticated, ...rest }) => {
+interface PrivateRouteProps extends RouteProps {
+  isAuthenticated: boolean;
+}
+
+const PrivateRoute: React.FC<PrivateRouteProps> = ({
+  component: Component,
+  isAuthenticated,
+  ...rest
+}) => {
   return (
     <Route
       {...rest}
-      render={(routeProps) =>
+      render={(routeProps: RouteComponentProps) =>
         isAuthenticated ? (
+          // @ts-ignore
           <Component {...routeProps} />
         ) : (
           <Redirect to="/welcome" />

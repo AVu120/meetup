@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Route,
   Redirect,
@@ -19,7 +18,12 @@ const PublicRoute: React.FC<PublicRouteProps> = ({
     <Route
       {...rest}
       render={(routeProps: RouteComponentProps) =>
-        isAuthenticated ? <Redirect to="/" /> : <Component {...routeProps} />
+        isAuthenticated ? (
+          <Redirect to="/" />
+        ) : (
+          // @ts-ignore
+          <Component {...routeProps} />
+        )
       }
     />
   );
