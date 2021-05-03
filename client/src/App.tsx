@@ -31,7 +31,7 @@ function App() {
             component={LogIn}
           />
           <PublicRoute
-            path="/welcome"
+            path={["/welcome", "/*"]}
             isAuthenticated={isAuthenticated}
             component={Landing}
           />
