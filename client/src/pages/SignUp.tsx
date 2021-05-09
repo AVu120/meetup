@@ -3,8 +3,6 @@ import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
@@ -12,6 +10,14 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
+import {
+  NAME,
+  EMAIL,
+  PASSWORD,
+  CONFIRMED_PASSWORD,
+  isEmailValid,
+  isConfirmedPasswordSameAsPassword,
+} from "../utils/formValidation";
 
 function Copyright() {
   return (
@@ -48,19 +54,18 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignUp() {
   const classes = useStyles();
-  // Form properties
-  const NAME = "name";
-  const EMAIL = "email";
-  const PASSWORD = "password";
-  const CONFIRMED_PASSWORD = "confirmedPassword";
-  const IS_REMEMBER_ME_TICKED = "isRememberMeTicked";
-
   const [formState, setFormState] = useState({
     [NAME]: "",
     [EMAIL]: "",
     [PASSWORD]: "",
     [CONFIRMED_PASSWORD]: "",
-    [IS_REMEMBER_ME_TICKED]: false,
+  });
+
+  const [hasFocusedThis, setHasFocusedThis] = useState({
+    [NAME]: false,
+    [EMAIL]: false,
+    [PASSWORD]: false,
+    [CONFIRMED_PASSWORD]: false,
   });
 
   const submitForm = (event: React.SyntheticEvent): void => {
@@ -78,18 +83,17 @@ export default function SignUp() {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <form className={classes.form} noValidate onSubmit={submitForm}>
+        <form className={classes.form} onSubmit={submitForm}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
                 autoComplete="name"
                 name="name"
-                variant="outlined"
                 required
+                variant="outlined"
                 fullWidth
                 id="name"
                 label="Name"
-                autoFocus
                 onChange={(e) =>
                   setFormState((state) => ({
                     ...state,
@@ -97,24 +101,53 @@ export default function SignUp() {
                   }))
                 }
                 value={formState[NAME]}
+                onBlur={() => {
+                  if (!hasFocusedThis[NAME])
+                    setHasFocusedThis((state) => ({
+                      ...state,
+                      [NAME]: true,
+                    }));
+                }}
+                error={hasFocusedThis[NAME] && !formState[NAME]}
+                helperText={
+                  hasFocusedThis[NAME] && !formState[NAME] && "Name required"
+                }
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 variant="outlined"
                 required
+                type="email"
                 fullWidth
                 id="email"
                 label="Email Address"
                 name="email"
                 autoComplete="email"
                 onChange={(e) =>
-                  setFormState((state) => ({
-                    ...state,
-                    [EMAIL]: e.target.value,
-                  }))
+                  setFormState((prevFormState) => {
+                    return { ...prevFormState, [EMAIL]: e.target.value };
+                  })
                 }
                 value={formState[EMAIL]}
+                onBlur={() => {
+                  if (!hasFocusedThis[EMAIL])
+                    setHasFocusedThis((state) => ({
+                      ...state,
+                      [EMAIL]: true,
+                    }));
+                }}
+                error={hasFocusedThis[EMAIL] && !isEmailValid(formState[EMAIL])}
+                helperText={
+                  hasFocusedThis[EMAIL] &&
+                  !isEmailValid(formState[EMAIL]) && (
+                    <>
+                      {formState[EMAIL].includes("@")
+                        ? "Not in valid format"
+                        : "@ is required"}
+                    </>
+                  )
+                }
               />
             </Grid>
             <Grid item xs={12}>
@@ -133,7 +166,20 @@ export default function SignUp() {
                     [PASSWORD]: e.target.value,
                   }))
                 }
+                onBlur={() => {
+                  if (!hasFocusedThis[PASSWORD])
+                    setHasFocusedThis((state) => ({
+                      ...state,
+                      [PASSWORD]: true,
+                    }));
+                }}
                 value={formState[PASSWORD]}
+                error={hasFocusedThis[PASSWORD] && !formState[PASSWORD]}
+                helperText={
+                  hasFocusedThis[PASSWORD] &&
+                  !formState[PASSWORD] &&
+                  "Password required"
+                }
               />
             </Grid>
             <Grid item xs={12}>
@@ -143,7 +189,7 @@ export default function SignUp() {
                 fullWidth
                 name="confirm-password"
                 label="Confirm Password"
-                type="confirm-password"
+                type="password"
                 id="confirm-password"
                 autoComplete="current-password"
                 onChange={(e) =>
@@ -153,26 +199,30 @@ export default function SignUp() {
                   }))
                 }
                 value={formState[CONFIRMED_PASSWORD]}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    value="allowExtraEmails"
-                    color="primary"
-                    checked={formState[IS_REMEMBER_ME_TICKED]}
-                    onChange={() =>
-                      setFormState((state) => ({
-                        ...state,
-                        [IS_REMEMBER_ME_TICKED]: !formState[
-                          IS_REMEMBER_ME_TICKED
-                        ],
-                      }))
-                    }
-                  />
+                onBlur={() => {
+                  if (!hasFocusedThis[CONFIRMED_PASSWORD])
+                    setHasFocusedThis((state) => ({
+                      ...state,
+                      [CONFIRMED_PASSWORD]: true,
+                    }));
+                }}
+                error={
+                  hasFocusedThis[CONFIRMED_PASSWORD] &&
+                  !!formState[PASSWORD] &&
+                  isConfirmedPasswordSameAsPassword({
+                    confirmedPassword: formState[CONFIRMED_PASSWORD],
+                    password: formState[PASSWORD],
+                  })
                 }
-                label="I want to receive inspiration, marketing promotions and updates via email."
+                helperText={
+                  hasFocusedThis[CONFIRMED_PASSWORD] &&
+                  formState[PASSWORD] &&
+                  isConfirmedPasswordSameAsPassword({
+                    confirmedPassword: formState[CONFIRMED_PASSWORD],
+                    password: formState[PASSWORD],
+                  }) &&
+                  "Does not match password"
+                }
               />
             </Grid>
           </Grid>
@@ -188,7 +238,7 @@ export default function SignUp() {
           <Grid container justify="flex-end">
             <Grid item>
               <Link href="#" variant="body2">
-                Already have an account? Sign in
+                Already have an account? Log in
               </Link>
             </Grid>
           </Grid>
