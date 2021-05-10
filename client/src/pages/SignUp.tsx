@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -54,6 +54,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignUp() {
   const classes = useStyles();
+  const emailInputRef = useRef<HTMLInputElement>(null);
   const [formState, setFormState] = useState({
     [NAME]: "",
     [EMAIL]: "",
@@ -70,7 +71,9 @@ export default function SignUp() {
 
   const submitForm = (event: React.SyntheticEvent): void => {
     event.preventDefault();
-    alert("Form submitted.");
+    if (formState[EMAIL] && !isEmailValid(formState[EMAIL]))
+      emailInputRef?.current?.focus();
+    else alert("Form submitted.");
   };
 
   return (
@@ -124,6 +127,7 @@ export default function SignUp() {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                inputRef={emailInputRef}
                 onChange={(e) =>
                   setFormState((prevFormState) => {
                     return { ...prevFormState, [EMAIL]: e.target.value };
