@@ -69,11 +69,16 @@ export default function SignUp() {
     [CONFIRMED_PASSWORD]: false,
   });
 
+  const isNameMissing = hasFocusedThis[NAME] && !formState[NAME];
+  const isEmailInvalid =
+    hasFocusedThis[EMAIL] && !isEmailValid(formState[EMAIL]);
+  const isPasswordMissing = hasFocusedThis[PASSWORD] && !formState[PASSWORD];
+
   const submitForm = (event: React.SyntheticEvent): void => {
     event.preventDefault();
-    if (formState[EMAIL] && !isEmailValid(formState[EMAIL]))
-      emailInputRef?.current?.focus();
-    else alert("Form submitted.");
+    formState[EMAIL] && !isEmailValid(formState[EMAIL])
+      ? emailInputRef?.current?.focus()
+      : alert("Form submitted.");
   };
 
   return (
@@ -111,10 +116,8 @@ export default function SignUp() {
                       [NAME]: true,
                     }));
                 }}
-                error={hasFocusedThis[NAME] && !formState[NAME]}
-                helperText={
-                  hasFocusedThis[NAME] && !formState[NAME] && "Name required"
-                }
+                error={isNameMissing}
+                helperText={isNameMissing && "Name required"}
               />
             </Grid>
             <Grid item xs={12}>
@@ -141,10 +144,9 @@ export default function SignUp() {
                       [EMAIL]: true,
                     }));
                 }}
-                error={hasFocusedThis[EMAIL] && !isEmailValid(formState[EMAIL])}
+                error={isEmailInvalid}
                 helperText={
-                  hasFocusedThis[EMAIL] &&
-                  !isEmailValid(formState[EMAIL]) && (
+                  isEmailInvalid && (
                     <>
                       {formState[EMAIL].includes("@")
                         ? "Not in valid format"
@@ -178,12 +180,8 @@ export default function SignUp() {
                     }));
                 }}
                 value={formState[PASSWORD]}
-                error={hasFocusedThis[PASSWORD] && !formState[PASSWORD]}
-                helperText={
-                  hasFocusedThis[PASSWORD] &&
-                  !formState[PASSWORD] &&
-                  "Password required"
-                }
+                error={isPasswordMissing}
+                helperText={isPasswordMissing && "Password required"}
               />
             </Grid>
             <Grid item xs={12}>
